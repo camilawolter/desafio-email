@@ -1,0 +1,10 @@
+# Arquivo de variáveis sensíveis
+.env
+
+# Ambiente virtual
+venv/
+__pycache__/
+*.pyc
+
+# Arquivos do Vercel
+.vercel
