@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, Send, Loader2, CheckCircle, FileText, Upload, X, ShieldCheck, Copy, Check } from 'lucide-react';
+import { Mail, Send, Loader2, CheckCircle, FileText, Upload, X, ShieldCheck, Check } from 'lucide-react';
 
 export default function App() {
   const [input, setInput] = useState('');
@@ -10,20 +10,27 @@ export default function App() {
   const [result, setResult] = useState(null);
   const [sent, setSent] = useState(false);
 
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+
   const handleAction = async () => {
     if (!input && !file) return alert("Por favor, insira o conteúdo do e-mail.");
     
     setLoading(true);
     setSent(false);
+    
     const fd = new FormData();
-    if (file) fd.append('arquivo', file);
-    else fd.append('texto', input);
+    if (file) {
+      fd.append('arquivo', file);
+    } else {
+      fd.append('texto', input);
+    }
 
     try {
-      const res = await axios.post('https://desafio-email.vercel.app/processar', fd);
+      const res = await axios.post(`${API_URL}/processar`, fd);
       setResult(res.data);
     } catch (e) { 
-      alert("Erro ao conectar com o servidor."); 
+      console.error(e);
+      alert("Erro ao conectar com o servidor. Verifique se o backend está rodando."); 
     } finally { 
       setLoading(false); 
     }
@@ -63,7 +70,7 @@ export default function App() {
         </header>
 
         <main className="grid lg:grid-cols-12 gap-8 items-stretch">
-          {/* Lado Esquerdo: Caixa de Entrada / Compor */}
+          {/* Lado Esquerdo: Entrada de Dados */}
           <div className="lg:col-span-7">
             <div className="bg-slate-900/40 backdrop-blur-xl border border-slate-800 p-8 rounded-[2.5rem] shadow-2xl h-full flex flex-col">
               <h2 className="text-lg font-bold mb-6 flex items-center gap-2">
@@ -72,7 +79,7 @@ export default function App() {
               
               <textarea 
                 className="flex-1 w-full min-h-[300px] bg-slate-950/50 border border-slate-800 p-6 rounded-2xl outline-none text-slate-300 placeholder:text-slate-700 text-lg leading-relaxed resize-none focus:border-blue-500/50 transition-all"
-                placeholder="Cole o corpo do e-mail aqui (pedidos de status, arquivos, agradecimentos...)"
+                placeholder="Cole o corpo do e-mail aqui..."
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 disabled={!!file}
@@ -111,7 +118,7 @@ export default function App() {
             </div>
           </div>
 
-          {/* Lado Direito: Ações da IA */}
+          {/* Lado Direito: Resultado da IA */}
           <div className="lg:col-span-5">
             <AnimatePresence mode="wait">
               {result ? (
