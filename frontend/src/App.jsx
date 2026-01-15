@@ -20,7 +20,7 @@ export default function App() {
     else fd.append('texto', input);
 
     try {
-      const res = await axios.post('http://localhost:8000/processar', fd);
+      const res = await axios.post('https://desafio-email.vercel.app/processar', fd);
       setResult(res.data);
     } catch (e) { 
       alert("Erro ao conectar com o servidor."); 
